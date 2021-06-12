@@ -34,7 +34,6 @@ export default class AuthController {
   }
 
   public async register ({ request, auth }: HttpContextContract) {
-
     const data = await request.validate({
       schema: schema.create({
         email: schema.string({}, [
