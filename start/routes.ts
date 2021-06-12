@@ -13,7 +13,7 @@ Route.group(() => {
   Route.get('/me', async ({auth}) => {
     return auth
   }).middleware('auth')
-  Route.post('/logout', async ({auth, response}) => {
+  Route.post('/logout', async ({auth}) => {
     await auth.use('web').logout()
     return auth
   })

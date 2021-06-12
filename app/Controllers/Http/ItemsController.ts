@@ -9,7 +9,7 @@ export default class ItemsController {
   public async create ({}: HttpContextContract) {
   }
 
-  public async store ({request, response}: HttpContextContract) {
+  public async store ({request}: HttpContextContract) {
     const name = request.input('name')
     const item = Item.create({name: name})
 
