@@ -28,16 +28,17 @@ Route.group(() => {
 
 Route.group(() => {
   Route.group(() => {
-    Route.resource('items', 'ItemsController').apiOnly()
     Route.resource('releases', 'ReleasesController').apiOnly()
+    Route.resource('items', 'ItemsController').apiOnly()
   }).middleware('auth')
 
-  Route.get('release/macos', async () => {
-    const macos = await Release.query().where('terminal', 'macos').orderBy('id', 'desc').first()
-    return macos?.url
-  })
   Route.get('release/windows', async () => {
     const windows = await Release.query().where('terminal', 'windows').orderBy('id', 'desc').first()
     return windows?.url
   })
 }).prefix('fstore')
+
+Route.get('release/macos', async () => {
+  const macos = await Release.query().where('terminal', 'macos').orderBy('id', 'desc').first()
+  return macos?.url
+})
