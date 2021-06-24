@@ -27,12 +27,12 @@ Route.group(() => {
  */
 
 Route.group(() => {
+  Route.get('/r/mac', 'GlobalsController.mac')
+  Route.get('/r/win', 'GlobalsController.win')
   Route.group(() => {
     Route.resource('releases', 'ReleasesController').apiOnly()
     Route.resource('items', 'ItemsController').apiOnly()
   }).middleware('auth')
-
-  // Route.get()
 
   Route.get('release/windows', async () => {
     return 'windows'
