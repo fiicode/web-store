@@ -32,13 +32,17 @@ Route.group(() => {
     Route.resource('items', 'ItemsController').apiOnly()
   }).middleware('auth')
 
+  // Route.get()
+
   Route.get('release/windows', async () => {
-    const windows = await Release.query().where('terminal', 'windows').orderBy('id', 'desc').first()
-    return windows?.url
+    return 'windows'
+    // const windows = await Release.query().where('terminal', 'windows').orderBy('id', 'desc').first()
+    // return windows?.url
   })
 }).prefix('fstore')
 
 Route.get('release/macos', async () => {
-  const macos = await Release.query().where('terminal', 'macos').orderBy('id', 'desc').first()
-  return macos?.url
+  return 'macos'
+  // const macos = await Release.query().where('terminal', 'macos').orderBy('id', 'desc').first()
+  // return macos?.url
 })
