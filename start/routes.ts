@@ -5,6 +5,9 @@ Route.get('/', async () => {
   return { api: "web", route: '/', group: 'fiicode © ' + (new Date().getFullYear())}
 })
 
+Route.get('/r/mac', 'GlobalsController.mac')
+Route.get('/r/win', 'GlobalsController.win')
+
 /**
  * ROUTE FOR AUTHENTICATION
  */
@@ -27,8 +30,6 @@ Route.group(() => {
  */
 
 Route.group(() => {
-  Route.get('/r/mac', 'GlobalsController.mac')
-  Route.get('/r/win', 'GlobalsController.win')
   Route.group(() => {
     Route.resource('releases', 'ReleasesController').apiOnly()
     Route.resource('items', 'ItemsController').apiOnly()
