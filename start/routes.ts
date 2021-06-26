@@ -30,6 +30,7 @@ Route.group(() => {
   Route.group(() => {
     Route.resource('items', 'ItemsController').apiOnly()
     Route.resource('releases', 'ReleasesController').apiOnly()
+    Route.resource('customers', 'CustomersController').apiOnly()
   }).middleware('auth')
 
   Route.get('release/macos', async () => {

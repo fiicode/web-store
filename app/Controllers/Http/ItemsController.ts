@@ -11,7 +11,7 @@ export default class ItemsController {
 
   public async store ({request}: HttpContextContract) {
     const name = request.input('name')
-    const item = Item.create({name: name})
+    const item = Item.firstOrCreate({name: name})
 
     return item
   }
