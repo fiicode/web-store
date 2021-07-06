@@ -14,15 +14,15 @@ export default class LinksController {
     if (params.service == "customer") {
       const lk = await Link.query().where('optionId', params.optionid).where('customerId', params.to).first()
       if (lk) {
-        lk.deletedAt = null;
+        // lk.deletedAt = true;
         lk.save();
         console.log('restore lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {
           return link.where('deletedAt', 'null').preload('option');
+          // .whereNull('deleted_at')
         }).first();
       } else {
-        const links = {userId: auth.user!.id, customerId: null, optionId: params.optionid}
-        links.customerId = params.to;
+        const links = {userId: auth.user!.id, customerId: params.to, optionId: params.optionid};
         Link.firstOrCreate(links);
         console.log('create lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {

@@ -32,6 +32,6 @@ export default class Link extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @column.dateTime({autoCreate: false })
+  @column.dateTime({autoCreate: false, serializeAs: null })
   public deletedAt: DateTime
 }
