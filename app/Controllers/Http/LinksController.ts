@@ -50,11 +50,11 @@ export default class LinksController {
       link.save();
       console.log('deleted lient');
       return Customer.query().where('id', link?.customerId).preload('links', (link) => {
-        return link.where('deletedAt', null).preload('option');
+        return link.where('deletedAt', 'null').preload('option');
       }).first();
     }
     return Customer.query().where('id', link?.customerId).preload('links', (link) => {
-      return link.where('deletedAt', null).preload('option');
+      return link.where('deletedAt', 'null').preload('option');
     }).first();
   }
 }
