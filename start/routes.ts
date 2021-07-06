@@ -51,7 +51,7 @@ Route.group(() => {
   })
   Route.get('/search/custom/phone/:phone', async ({ params }) => {
     return await Customer.query().where('phone', 'like', `%${params.phone}%`).preload('links', (link) => {
-      return link.where('deletedAt', null).preload('option');
+      return link.where('deletedAt', 'NULL').preload('option');
     });
   })
 }).prefix('fstore')
