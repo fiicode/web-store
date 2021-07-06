@@ -1,7 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Customer from 'App/Models/Customer';
-import Customer from 'App/Models/Customer'
-import Link from 'App/Models/Link'
+import Link from 'App/Models/Link';
 import { DateTime } from 'luxon';
 
 export default class LinksController {
@@ -19,7 +18,7 @@ export default class LinksController {
         lk.save();
         console.log('restore lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {
-          return link.where('deletedAt', null).preload('option');
+          return link.where('deletedAt', 'null').preload('option');
         }).first();
       } else {
         const links = {userId: auth.user!.id, customerId: null, optionId: params.optionid}
@@ -27,7 +26,7 @@ export default class LinksController {
         Link.firstOrCreate(links);
         console.log('create lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {
-          return link.where('deletedAt', null).preload('option');
+          return link.where('deletedAt', 'null').preload('option');
         }).first();
       }
     }
