@@ -47,8 +47,8 @@ export default class AuthController {
     })
 
     const user = await User.create(data)
-
     // Send email or number verification
+
     await auth.use('web').login(user)
     return auth.user
   }

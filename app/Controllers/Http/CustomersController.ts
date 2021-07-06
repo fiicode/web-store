@@ -3,7 +3,10 @@ import Customer from 'App/Models/Customer'
 
 export default class CustomersController {
   public async index ({}: HttpContextContract) {
-    return Customer.all()
+    // const customer = await Customer.query().paginate(1);
+    return await Customer.query().preload('links', (link) => {
+      return link.where('deletedAt', null).preload('option')
+    });
   }
 
   public async create ({}: HttpContextContract) {
