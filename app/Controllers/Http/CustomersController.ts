@@ -4,8 +4,8 @@ import Customer from 'App/Models/Customer'
 export default class CustomersController {
   public async index ({}: HttpContextContract) {
     // const customer = await Customer.query().paginate(1);
-    return await Customer.query().preload('links', (link) => {
-      return link.where('deletedAt', 'null').preload('option')
+    return await Customer.query().whereNull('deletedAt').preload('links', (link) => {
+      return link.whereNull('deletedAt').preload('option')
     });
   }
 

@@ -14,19 +14,16 @@ export default class LinksController {
     if (params.service == "customer") {
       const lk = await Link.query().where('optionId', params.optionid).where('customerId', params.to).first()
       if (lk) {
-        // lk.deletedAt = true;
+        lk.deletedAt = null;
         lk.save();
-        console.log('restore lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {
-          return link.where('deletedAt', 'null').preload('option');
-          // .whereNull('deleted_at')
+          return link.whereNull('deletedAt').preload('option');
         }).first();
       } else {
         const links = {userId: auth.user!.id, customerId: params.to, optionId: params.optionid};
         Link.firstOrCreate(links);
-        console.log('create lien');
         return Customer.query().where('id', params.to).preload('links', (link) => {
-          return link.where('deletedAt', 'null').preload('option');
+          return link.whereNull('deletedAt').preload('option');
         }).first();
       }
     }
@@ -47,13 +44,12 @@ export default class LinksController {
     if (params.service === "customer" && link?.deletedAt === null) {
       link.deletedAt = DateTime.now();
       link.save();
-      console.log('deleted lient');
       return Customer.query().where('id', link?.customerId).preload('links', (link) => {
-        return link.where('deletedAt', 'null').preload('option');
+        return link.whereNull('deletedAt').preload('option');
       }).first();
     }
     return Customer.query().where('id', link?.customerId).preload('links', (link) => {
-      return link.where('deletedAt', 'null').preload('option');
+      return link.whereNull('deletedAt').preload('option');
     }).first();
   }
 }
