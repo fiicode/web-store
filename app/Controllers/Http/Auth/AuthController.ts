@@ -20,17 +20,22 @@ export default class AuthController {
     const email = data.email
     const password = data.password
 
-    const user = await User
-    .query()
-    .where('email', email)
-    .firstOrFail()
+    // const user = await User
+    // .query()
+    // .where('email', email)
+    // .firstOrFail()
 
-    if (!(await Hash.verify(user.password, password))) {
-      return response.badRequest('Invalid credentials')
+    // if (!(await Hash.verify(user.password, password))) {
+    //   return response.badRequest('Invalid credentials')
+    // }
+    try {
+      await auth.use('web').attempt(email, password)
+      return auth.user
+    } catch {
+      return response.badRequest({errors: [{message:'Identifiants non valides'}]})
     }
-    // await auth.attempt(email, password)
-    await auth.use('web').login(user)
-    return auth.user
+    // await auth.use('web').login(user)
+    // return auth.user
   }
 
   public async register ({ request, auth }: HttpContextContract) {

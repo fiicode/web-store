@@ -1,20 +1,35 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Customer from 'App/Models/Customer'
+import { schema, rules } from '@ioc:Adonis/Core/Validator';
 
 export default class CustomersController {
-  public async index ({}: HttpContextContract) {
+  public async index ({request}: HttpContextContract) {
+    // const page = request.input('page')
+    // const limit = 10
+    console.log(request.input('page'));
     // const customer = await Customer.query().paginate(1);
     return await Customer.query().whereNull('deletedAt').preload('links', (link) => {
       return link.whereNull('deletedAt').preload('option')
     });
+  // }).paginate(page, limit);
   }
 
   public async create ({}: HttpContextContract) {
   }
 
   public async store ({request, auth }: HttpContextContract) {
-    const name = request.input('name')
-    const phone = request.input('phone')
+    const data = await request.validate({
+      schema: schema.create({
+        name: schema.string({}, [
+          rules.minLength(2)
+        ]),
+        phone: schema.string({}, [
+          rules.minLength(9)
+        ])
+      })
+    })
+    const name = data.name
+    const phone = data.phone
     const userId = auth.user!.id
 
     const customer = Customer.firstOrCreate({
