@@ -39,6 +39,9 @@ Route.group(() => {
     Route.resource('customers', 'CustomersController').apiOnly()
     Route.post('/link/create/:optionid/:to/:service', 'LinksController.store')
     Route.delete('/link/delete/:link/:service', 'LinksController.destroy')
+    Route.get('/total/customers', async () => {
+      return (await Customer.query().select('id')).length;
+    })
   }).middleware('auth')
 
   Route.get('release/macos', async () => {
