@@ -21,13 +21,20 @@ export default class CustomersController {
     const data = await request.validate({
       schema: schema.create({
         name: schema.string({}, [
-          rules.minLength(2)
+          rules.minLength(2),
         ]),
         phone: schema.string({}, [
-          rules.minLength(9)
+          rules.minLength(9),
+          rules.unique({ table: 'customers', column: 'phone'})
         ])
-      })
+      }),
+      messages: {
+        required: 'Le {{ field }} est obligatoire pour ajouter',
+        'phone.unique': 'Ce numéro existe déjà.',
+        'phone.minLength': 'Numéro incorrect'
+      }
     })
+
     const name = data.name
     const phone = data.phone
     const userId = auth.user!.id
