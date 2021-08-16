@@ -10,6 +10,7 @@ import {
 import Item from './Item'
 import Customer from './Customer'
 import Link from './Link'
+import List from './List'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -48,4 +49,7 @@ export default class User extends BaseModel {
 
   @hasMany(() => Link)
   public links: HasMany<typeof Link>
+
+  @hasMany(() => List)
+  public lists: HasMany<typeof List>
 }

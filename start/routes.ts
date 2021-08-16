@@ -4,7 +4,7 @@ import Release from 'App/Models/Release'
 import { CustomerFactory } from 'Database/factories'
 
 Route.get('/', async () => {
-  return { api: "web", route: '/', group: 'fiicode © ' + (new Date().getFullYear())}
+  return { api: "web", route: '/', group: 'fiicode © ' + (new Date().getFullYear()) }
 })
 
 Route.get('/faker', async () => {
@@ -18,10 +18,10 @@ Route.group(() => {
   Route.post('/login', 'Auth/AuthController.login')
   Route.post('/register', 'Auth/AuthController.register')
   Route.group(() => {
-    Route.get('/me', async ({auth}) => {
+    Route.get('/me', async ({ auth }) => {
       return auth
     })
-    Route.post('/logout', async ({auth}) => {
+    Route.post('/logout', async ({ auth }) => {
       await auth.use('web').logout()
       return auth
     })
@@ -37,6 +37,16 @@ Route.group(() => {
     Route.resource('items', 'ItemsController').apiOnly()
     Route.resource('releases', 'ReleasesController').apiOnly()
     Route.resource('customers', 'CustomersController').apiOnly()
+    Route.resource('orders', 'OrdersController').apiOnly()
+
+    /**
+     * Orders ø Invoices => lists intersect
+     */
+    Route.group(() => {
+      Route.post('/create/order/list', 'ListsController.createOrderList')
+    })
+
+
     Route.post('/link/create/:optionid/:to/:service', 'LinksController.store')
     Route.delete('/link/delete/:link/:service', 'LinksController.destroy')
     Route.get('/total/customers', async () => {
