@@ -1,14 +1,22 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
 import Customer from './Customer'
+import Deliverer from './Deliverer'
 import Option from './Option'
-import Deliverer from './Deliverer';
-import Phone from 'App/Models/Phone';
+import Phone from './Phone'
+import List from './List'
 import Store from './Store'
-export default class Link extends BaseModel {
+
+export default class Invoice extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public storeId: number
+
+  @belongsTo(() => Store)
+  public store: BelongsTo<typeof Store>
 
   @column()
   public userId: number
@@ -23,41 +31,47 @@ export default class Link extends BaseModel {
   public customer: BelongsTo<typeof Customer>
 
   @column()
-  public optionId: number
-
-  @belongsTo(() => Option)
-  public option: BelongsTo<typeof Option>
-
-  @column()
   public delivererId: number
 
   @belongsTo(() => Deliverer)
   public deliverer: BelongsTo<typeof Deliverer>
 
   @column()
-  public phoneId: number
+  public paiementModeToGlobalCustomerId: number
+
+  @belongsTo(() => Option)
+  public paiementModeToGlobalCustomer: BelongsTo<typeof Option>
+
+  @column()
+  public accountPaiementToGlobalCustomerId: number
 
   @belongsTo(() => Phone)
-  public phone: BelongsTo<typeof Phone>
+  public accountPaiementToGlobalCustomer: BelongsTo<typeof Phone>
 
   @column()
-  public userFromToId: number
-
-  @belongsTo(() => User)
-  public userFromTo: BelongsTo<typeof User>
+  public cost: number
 
   @column()
-  public storeId: number
+  public total: number
 
-  @belongsTo(() => Store)
-  public store: BelongsTo<typeof Store>
+  @column()
+  public paye: number
+
+  @column()
+  public interest: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
+
+  @column()
+  public schedule: string
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
   @column.dateTime({autoCreate: false })
   public deletedAt: DateTime | null
+
+  @hasMany(() => List)
+  public lists: HasMany<typeof List>
 }

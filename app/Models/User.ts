@@ -11,10 +11,16 @@ import Item from './Item'
 import Customer from './Customer'
 import Link from './Link'
 import List from './List'
-
+import Option from './Option'
+import Phone from './Phone';
+import Invoice from './Invoice'
+import Store from './Store'
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public active: boolean
 
   @column()
   public email: string
@@ -50,6 +56,22 @@ export default class User extends BaseModel {
   @hasMany(() => Link)
   public links: HasMany<typeof Link>
 
+  // @hasMany(() => Link)
+  // public linksFromTo: HasMany<typeof Link>
+
   @hasMany(() => List)
   public lists: HasMany<typeof List>
+
+  @hasMany(() => Option)
+  public options: HasMany<typeof Option>
+
+  @hasMany(() => Phone)
+  public phones: HasMany<typeof Phone>
+
+  @hasMany(() => Invoice)
+  public invoices: HasMany<typeof Invoice>
+
+  @hasMany(() => Store)
+  public stores: HasMany<typeof Store>
+
 }

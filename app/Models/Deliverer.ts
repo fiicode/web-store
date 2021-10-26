@@ -1,10 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from './User';
-import Store from './Store';
+import Link from './Link';
 import Phone from './Phone';
+import Store from './Store';
 
-export default class Supplier extends BaseModel {
+export default class Deliverer extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
@@ -12,19 +13,10 @@ export default class Supplier extends BaseModel {
   public name: string
 
   @column()
-  public address: string
-
-  @column()
   public phoneId: number
 
   @belongsTo(() => Phone)
   public phone: BelongsTo<typeof Phone>
-
-  @column()
-  public email: string
-
-  @column()
-  public avatar: string
 
   @column()
   public userId: number
@@ -47,4 +39,6 @@ export default class Supplier extends BaseModel {
   @column.dateTime({ autoCreate: false })
   public deletedAt: DateTime
 
+  @hasMany(() => Link)
+  public links: HasMany<typeof Link>
 }
