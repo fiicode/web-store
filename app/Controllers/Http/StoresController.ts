@@ -6,7 +6,12 @@ import Store from 'App/Models/Store';
 
 export default class StoresController {
   public async index ({auth}: HttpContextContract) {
-    return await Store.query().whereNull('deletedAt').where('user_id', auth.user!.id).preload('user').preload('phone')
+    const store = await Store.query().whereNull('deletedAt').where('user_id', auth.user!.id).preload('user').preload('phone')
+    const link = await Link.query().whereNull('deletedAt').where('user_from_to_id', auth.user!.id).preload('user').preload('store', (store) => {
+      return store.preload('user').preload('phone')
+    })
+    
+    return [...store, ...link]
   }
 
   public async create ({}: HttpContextContract) {

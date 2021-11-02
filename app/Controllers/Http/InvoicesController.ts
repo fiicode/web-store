@@ -1,11 +1,13 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { current_store } from 'App/Helpers';
 import Invoice from '../../Models/Invoice';
 
 export default class InvoicesController {
-  public async index ({request}: HttpContextContract) {
+  public async index ({request, auth}: HttpContextContract) {
     const page = request.input('page')
     const limit = 10
-    return await Invoice.query().whereNull('deletedAt').preload('customer', (customer) => {
+    const store = await current_store(auth)
+    return await Invoice.query().where('store_id', String(store)).whereNull('deletedAt').preload('customer', (customer) => {
       return customer.whereNull('deletedAt').preload('phones')
     }).preload('deliverer', (deliverer) => {
       return deliverer.whereNull('deletedAt').preload('phone')

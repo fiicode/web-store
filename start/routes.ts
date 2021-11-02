@@ -6,6 +6,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Option from 'App/Models/Option';
 import Store from 'App/Models/Store';
 import Phone from 'App/Models/Phone';
+import { get_store_user_in } from 'App/Helpers';
 
 Route.get('/', async () => {
   return { api: "web", route: '/', group: 'fiicode © ' + (new Date().getFullYear()) }
@@ -14,22 +15,22 @@ Route.get('/', async () => {
 /**
  * FAKER & INSERTION, DROP FIX DB
  */
-Route.get('/faker', async () => {
+// Route.get('/faker', async () => {
   // await ItemFactory.createMany(100);
   // await CustomerFactory.createMany(270);
   // const customerTablePhone = await Database.from('customers').select('id', 'phone', 'user_id', 'phone_id').limit(4);
-  const customerTablePhone = await Customer.query().select('id', 'phone', 'user_id', 'phone_id');
-  customerTablePhone.map(async (p) => {
-    const phone = await Phone.firstOrCreate({
-      number: p.phone,
-      userId: p.userId
-    })
-    p.phoneId = phone.id
-    await p.save();
-  })
+  // const customerTablePhone = await Customer.query().select('id', 'phone', 'user_id', 'phone_id');
+  // customerTablePhone.map(async (p) => {
+  //   const phone = await Phone.firstOrCreate({
+  //     number: p.phone,
+  //     userId: p.userId
+  //   })
+  //   p.phoneId = phone.id
+  //   await p.save();
+  // })
 
-  return 'terminé'
-})
+  // return 'terminé'
+// })
 
 
 /**
@@ -62,6 +63,7 @@ Route.group(() => {
     Route.resource('suppliers', 'SuppliersController').apiOnly()
     Route.resource('invoices', 'InvoicesController').apiOnly()
     Route.resource('stores', 'StoresController').apiOnly()
+    Route.resource('currentStores', 'CurrentStoresController').apiOnly()
     /**
      * Orders ø Invoices => lists intersect
      */
@@ -75,6 +77,9 @@ Route.group(() => {
     Route.get('/total/customers', async () => {
       return (await Customer.query().select('id')).length;
     })
+    // Route.get('/store/link', async ({auth}) => {
+    //   return await Link.query().whereNull('deletedAt').where('user_from_to_id', auth.user!.id).preload('user').preload('store')
+    // })
     Route.get('/list/paimentmode', async () => {
       return await Option.query().where('payment_mode', true)
     })
@@ -82,7 +87,9 @@ Route.group(() => {
       return await Option.query().where('unity', true)
     })
     Route.get('store/:id', async ({params, auth}) => {
-      return Store.query().where('id',params.id).whereNull('deletedAt').where('user_id', auth.user!.id).first()
+
+      let store = await Store.query().where('id',params.id).where('user_id', auth!.user!.id).whereNull('deletedAt').first()
+      return store ? store : get_store_user_in(auth, params.id)
     })
   }).middleware('auth')
 

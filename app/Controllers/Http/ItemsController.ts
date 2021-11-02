@@ -1,9 +1,11 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { current_store } from 'App/Helpers';
 import Item from '../../Models/Item';
 
 export default class ItemsController {
-  public async index ({}: HttpContextContract) {
-    return Item.all()
+  public async index ({auth}: HttpContextContract) {
+    const store = await current_store(auth)
+    return Item.query().where('store_id', String(store)).orderBy('id', 'desc')
   }
 
   public async create ({}: HttpContextContract) {
