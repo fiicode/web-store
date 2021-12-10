@@ -29,7 +29,7 @@ export default class CustomersController {
         ]),
         phone: schema.number([
           rules.unsigned(),
-          rules.minLength(7),
+          // rules.minLength(7),
           rules.unique({ table: 'phones', column: 'number'})
         ]),
         store: schema.string({}, [
@@ -40,7 +40,7 @@ export default class CustomersController {
         required: 'Le {{ field }} est obligatoire pour ajouter',
         'phone.unique': 'Ce numéro existe déjà.',
         'phone.number': 'Numéro incorrect',
-        'phone.minLength': 'Numéro incorrect',
+        // 'phone.minLength': 'Numéro incorrect',
         'phone.unsigned': 'Numéro incorrect',
         'store.required': 'Veuillez selectionez une boutique'
       }
