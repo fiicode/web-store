@@ -10,12 +10,12 @@ export default class InvoicesController {
     return await Invoice.query().where('store_id', String(store)).whereNull('deletedAt').preload('customer', (customer) => {
       return customer.whereNull('deletedAt').preload('phones')
     }).preload('deliverer', (deliverer) => {
-      return deliverer.whereNull('deletedAt').preload('phone')
+      return deliverer.whereNull('deletedAt').preload('phones')
     }).preload('user').preload('lists', (list) => {
       return list.whereNull('deletedAt').preload('item', (item) => {
         return item.whereNull('deletedAt')
       }).preload('deliverer', (deliverer) => {
-        return deliverer.whereNull('deletedAt').preload('phone')
+        return deliverer.whereNull('deletedAt').preload('phones')
       }).preload('customer', (customer) => {
         return customer.whereNull('deletedAt').preload('phones')
       })

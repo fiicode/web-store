@@ -6,7 +6,9 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Option from 'App/Models/Option';
 import Store from 'App/Models/Store';
 import Phone from 'App/Models/Phone';
-import { get_store_user_in } from 'App/Helpers';
+import { current_store, fs_creatOrEditElement, get_store_user_in, isNumeric } from 'App/Helpers';
+import Deliverer from 'App/Models/Deliverer';
+import Supplier from 'App/Models/Supplier';
 
 Route.get('/', async () => {
   return { api: "web", route: '/', group: 'fiicode © ' + (new Date().getFullYear()) }
@@ -15,7 +17,7 @@ Route.get('/', async () => {
 /**
  * FAKER & INSERTION, DROP FIX DB
  */
-// Route.get('/faker', async () => {
+Route.get('/faker', async () => {
   // await ItemFactory.createMany(100);
   // await CustomerFactory.createMany(270);
   // const customerTablePhone = await Database.from('customers').select('id', 'phone', 'user_id', 'phone_id').limit(4);
@@ -30,7 +32,8 @@ Route.get('/', async () => {
   // })
 
   // return 'terminé'
-// })
+  // return fs_creatOrEditElement('', '6666666666', '6666666676')
+})
 
 
 /**
@@ -83,6 +86,11 @@ Route.group(() => {
     Route.get('/list/paimentmode', async () => {
       return await Option.query().where('payment_mode', true)
     })
+    Route.post('/list/paimentmode', async({request, auth}) => {
+      const body = request.body();
+
+      return await Option.query().where('id', body.id).first()
+    })
     Route.get('/list/unity', async () => {
       return await Option.query().where('unity', true)
     })
@@ -90,6 +98,38 @@ Route.group(() => {
 
       let store = await Store.query().where('id',params.id).where('user_id', auth!.user!.id).whereNull('deletedAt').first()
       return store ? store : get_store_user_in(auth, params.id)
+    })
+    Route.get('/search/items/:name', async ({params, auth}) => {
+      const store = await current_store(auth)
+      return await Database.from('items')
+        .select('id as value', 'name as label', 'title', 'description', 'price')
+        .where('store_id', String(store))
+        .where('name', 'like', `%${params.name}%`)
+        .orWhere('title', 'like', `%${params.name}%`)
+        .orWhere('description', 'like', `%${params.name}%`)
+    })
+    Route.post('/autocomplete/name/phone', async({request, auth}) => {
+      const store = await current_store(auth)
+      const body = request.body();
+      let customer
+      let deliverer
+      let supplier
+      if (body?.terme) {
+        if (isNumeric(body.terme)) {
+          return await Phone.query().where('store_id', String(store)).whereNull('deletedAt').where('number', 'like', `%${body.terme}%`).preload('customers', (customer) => {
+            return customer.whereNull('deletedAt');
+          }).preload('deliverers', (deliverer) => {
+            return deliverer.whereNull('deletedAt');
+          }).preload('suppliers', (supplier) => {
+            return supplier.whereNull('deletedAt');
+          })
+        } else {
+          customer = await Customer.query().whereNull('deletedAt').where('store_id', String(store)).where('name', 'like', `%${body.terme}%`).orWhere('address', 'like', `%${body.terme}%`).preload('phones')
+          deliverer = await Deliverer.query().whereNull('deletedAt').where('store_id', String(store)).where('name', 'like', `%${body.terme}%`).preload('phones')
+          supplier = await Supplier.query().whereNull('deletedAt').where('store_id', String(store)).where('name', 'like', `%${body.terme}%`).orWhere('address', 'like', `%${body.terme}%`).preload('phones')
+        }
+      }
+      return [...customer, ...deliverer, ...supplier]
     })
   }).middleware('auth')
 
@@ -103,8 +143,5 @@ Route.group(() => {
   })
   Route.get('/search/custom/phone/:phone', async ({ params }) => {
     return await Phone.query().where('number', 'like', `%${params.phone}%`).preload('customers').preload('links')
-  })
-  Route.get('/search/items/:name', async ({params}) => {
-    return await Database.from('items').select('id as value', 'name as label').where('name', 'like', `%${params.name}%`)
   })
 }).prefix('fstore')

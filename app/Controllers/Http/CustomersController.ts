@@ -3,11 +3,12 @@ import Customer from 'App/Models/Customer'
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
 import Phone from '../../Models/Phone';
 import Link from '../../Models/Link';
+import { current_store } from 'App/Helpers';
 
 export default class CustomersController {
   public async index ({request}: HttpContextContract) {
     const page = request.input('page')
-    const limit = 50
+    const limit = 18
     return await Customer.query().whereNull('deletedAt').preload('links', (link) => {
       return link.whereNull('deletedAt').preload('user').preload('option', (option) => {
         return option.whereNull('deletedAt').preload('user')
@@ -26,8 +27,9 @@ export default class CustomersController {
         name: schema.string({}, [
           rules.minLength(2),
         ]),
-        phone: schema.string({}, [
-          rules.minLength(9),
+        phone: schema.number([
+          rules.unsigned(),
+          rules.minLength(7),
           rules.unique({ table: 'phones', column: 'number'})
         ]),
         store: schema.string({}, [
@@ -37,14 +39,18 @@ export default class CustomersController {
       messages: {
         required: 'Le {{ field }} est obligatoire pour ajouter',
         'phone.unique': 'Ce numéro existe déjà.',
+        'phone.number': 'Numéro incorrect',
         'phone.minLength': 'Numéro incorrect',
+        'phone.unsigned': 'Numéro incorrect',
         'store.required': 'Veuillez selectionez une boutique'
       }
     })
 
+    const store = await current_store(auth)
+
     const name = data.name
     const phone = data.phone
-    const store = parseInt(data.store)
+    // const store = parseInt(data.store)
     const userId = auth.user!.id
 
     const number = await Phone.firstOrCreate({

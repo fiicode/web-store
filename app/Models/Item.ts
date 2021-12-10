@@ -12,7 +12,16 @@ export default class Item extends BaseModel {
   public name: string
 
   @column()
+  public title: string | null
+
+  @column()
+  public description: string | null
+
+  @column()
   public price: number
+
+  @column()
+  public slug: string | null
 
   @column()
   public survey: boolean

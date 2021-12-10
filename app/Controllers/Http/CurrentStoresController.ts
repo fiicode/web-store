@@ -15,6 +15,9 @@ export default class CurrentStoresController {
   public async store ({request, auth}: HttpContextContract) {
 
     const id = request.body().store
+    if (!id) {
+      return
+    }
     return await CurrentStore.create({
       userId: auth.user!.id,
       storeId: id
@@ -33,4 +36,3 @@ export default class CurrentStoresController {
   public async destroy ({}: HttpContextContract) {
   }
 }
-

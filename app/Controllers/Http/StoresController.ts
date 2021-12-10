@@ -65,6 +65,10 @@ export default class StoresController {
       storeId: store!.id,
       userId: auth.user!.id
     })
+    if (phone && store) {
+      phone.storeId = store.id
+      phone.save()
+    }
 
     return store
   }

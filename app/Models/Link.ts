@@ -23,6 +23,12 @@ export default class Link extends BaseModel {
   public customer: BelongsTo<typeof Customer>
 
   @column()
+  public supplierId: number
+
+  @belongsTo(() => Customer)
+  public supplier: BelongsTo<typeof Customer>
+
+  @column()
   public optionId: number
 
   @belongsTo(() => Option)

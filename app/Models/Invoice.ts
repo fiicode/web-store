@@ -66,7 +66,7 @@ export default class Invoice extends BaseModel {
   @column()
   public schedule: string
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate : true })
   public updatedAt: DateTime
 
   @column.dateTime({autoCreate: false })

@@ -12,6 +12,9 @@ export default class Option extends BaseModel {
   public name: string
 
   @column()
+  public isfield: boolean
+
+  @column()
   public userId: number
 
   @belongsTo(() => User)

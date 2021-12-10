@@ -16,7 +16,7 @@ export default class Deliverer extends BaseModel {
   public phoneId: number
 
   @belongsTo(() => Phone)
-  public phone: BelongsTo<typeof Phone>
+  public phones: BelongsTo<typeof Phone>
 
   @column()
   public userId: number

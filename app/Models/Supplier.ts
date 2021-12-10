@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from './User';
 import Store from './Store';
 import Phone from './Phone';
+import Link from './Link';
 
 export default class Supplier extends BaseModel {
   @column({ isPrimary: true })
@@ -18,7 +19,7 @@ export default class Supplier extends BaseModel {
   public phoneId: number
 
   @belongsTo(() => Phone)
-  public phone: BelongsTo<typeof Phone>
+  public phones: BelongsTo<typeof Phone>
 
   @column()
   public email: string
@@ -46,5 +47,8 @@ export default class Supplier extends BaseModel {
 
   @column.dateTime({ autoCreate: false })
   public deletedAt: DateTime
+
+  @hasMany(() => Link)
+  public links: HasMany<typeof Link>
 
 }
