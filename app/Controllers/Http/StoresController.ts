@@ -10,7 +10,7 @@ export default class StoresController {
     const link = await Link.query().whereNull('deletedAt').where('user_from_to_id', auth.user!.id).preload('user').preload('store', (store) => {
       return store.preload('user').preload('phone')
     })
-    
+
     return [...store, ...link]
   }
 
@@ -27,9 +27,9 @@ export default class StoresController {
         address: schema.string.optional({}, [
           rules.minLength(2)
         ]),
-        phone: schema.string.optional({}, [
-          rules.minLength(9),
-          rules.unique({table: 'phones', column: 'number'})
+        phone: schema.number([
+          rules.unsigned(),
+          rules.required()
         ])
       }),
       messages: {

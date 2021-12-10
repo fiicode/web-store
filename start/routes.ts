@@ -6,7 +6,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Option from 'App/Models/Option';
 import Store from 'App/Models/Store';
 import Phone from 'App/Models/Phone';
-import { current_store, fs_creatOrEditElement, get_store_user_in, isNumeric } from 'App/Helpers';
+import { current_store, get_store_user_in, isNumeric } from 'App/Helpers';
 import Deliverer from 'App/Models/Deliverer';
 import Supplier from 'App/Models/Supplier';
 
@@ -86,7 +86,7 @@ Route.group(() => {
     Route.get('/list/paimentmode', async () => {
       return await Option.query().where('payment_mode', true)
     })
-    Route.post('/list/paimentmode', async({request, auth}) => {
+    Route.post('/list/paimentmode', async({request}) => {
       const body = request.body();
 
       return await Option.query().where('id', body.id).first()

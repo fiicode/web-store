@@ -12,7 +12,7 @@ export default class Phone extends BaseModel {
   public id: number
 
   @column()
-  public number: string
+  public number: number
 
   @column()
   public account: boolean

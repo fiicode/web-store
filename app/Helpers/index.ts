@@ -24,7 +24,8 @@ export const current_store = async (auth) => (await CurrentStore.query().where('
  */
 export function isNumeric(str) {
   if (typeof str != "string") return false
-  return !isNaN(str) && !isNaN(parseFloat(str))
+  // return !isNaN(str) && !isNaN(parseFloat(str))
+  return !isNaN(parseFloat(str))
 }
 
 /**
