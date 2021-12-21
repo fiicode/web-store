@@ -30,7 +30,9 @@
       "@adonisjs/repl",
       "@adonisjs/auth",
       "@adonisjs/lucid",
-      "@adonisjs/session"
+      "@adonisjs/session",
+      "@adonisjs/drive-s3",
+      "@adonisjs/drive-gcs"
     ]
   }
 }

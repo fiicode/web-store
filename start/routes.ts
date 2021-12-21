@@ -117,11 +117,11 @@ Route.group(() => {
       if (body?.terme) {
         if (isNumeric(body.terme)) {
           return await Phone.query().where('store_id', String(store)).whereNull('deletedAt').where('number', 'like', `%${body.terme}%`).preload('customers', (customer) => {
-            return customer.whereNull('deletedAt');
+            return customer.whereNull('deletedAt').where('store_id', String(store));
           }).preload('deliverers', (deliverer) => {
-            return deliverer.whereNull('deletedAt');
+            return deliverer.whereNull('deletedAt').where('store_id', String(store));
           }).preload('suppliers', (supplier) => {
-            return supplier.whereNull('deletedAt');
+            return supplier.whereNull('deletedAt').where('store_id', String(store));
           })
         } else {
           customer = await Customer.query().whereNull('deletedAt').where('store_id', String(store)).where('name', 'like', `%${body.terme}%`).orWhere('address', 'like', `%${body.terme}%`).preload('phones')

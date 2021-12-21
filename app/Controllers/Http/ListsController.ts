@@ -130,7 +130,7 @@ export default class ListsController {
           .where('id', customer ? customer?.id : null)
           .where('store_id', String(store)).preload('phones').first()
           if (customer) {
-            customer.address = headinvoice.customer_adress
+            customer.address = headinvoice.customer_adress ?? null
             await customer.save()
           }
         }
@@ -254,7 +254,7 @@ export default class ListsController {
 
             if (customer) {
               customer.name = headinvoice.customer_name;
-              customer.address = headinvoice.customer_adress;
+              customer.address = headinvoice.customer_adress ?? null;
               customer.phoneId = phone?.id
               await customer.save();
             }
@@ -263,7 +263,7 @@ export default class ListsController {
           if (headinvoice.customer_name && !customer && phone) {
             customer = await Customer.firstOrCreate({
               name: headinvoice.customer_name ?? null,
-              address: headinvoice.customer_adress,
+              address: headinvoice.customer_adress ?? null,
               phoneId: phone ? phone.id : null,
               storeId: store,
               userId: userId
@@ -293,55 +293,57 @@ export default class ListsController {
       if (typeof headinvoice.deliverer_name === 'string') {
         if (headinvoice.deliverer_phone) {
           delivererPhone = await Phone.query().where('number', headinvoice.deliverer_phone).first()
-        }
 
-        if (headinvoice.deliverer_phone && !delivererPhone) {
-          delivererPhone = await Phone.firstOrCreate({
-            number: headinvoice.deliverer_phone,
-            storeId: store,
-            userId: userId
-          })
-        }
+          if (!delivererPhone) {
+            delivererPhone = await Phone.firstOrCreate({
+              number: headinvoice.deliverer_phone,
+              storeId: store,
+              userId: userId
+            })
+          }
 
-        if (delivererPhone) {
+          if (delivererPhone) {
 
-          if (headinvoice.deliverer_name) {
-            deliverer = await Deliverer.query()
-            .where('phone_id', delivererPhone.id)
+            if (headinvoice.deliverer_name) {
+              deliverer = await Deliverer.query()
+              .where('phone_id', delivererPhone.id)
+              .where('store_id', String(store))
+              .whereNull('deletedAt').first()
+
+              if (deliverer && delivererPhone) {
+                deliverer.name = headinvoice?.deliverer_name
+                deliverer.phoneId = delivererPhone?.id
+                await deliverer.save()
+              }
+            }
+
+            if (headinvoice.deliverer_name && !deliverer && delivererPhone) {
+              deliverer = await Deliverer.firstOrCreate({
+                name: headinvoice.deliverer_name,
+                phoneId: delivererPhone.id,
+                storeId: store,
+                userId: userId
+              })
+            }
+
+            const linksdeliver = await Link.query()
+            .where('deliverer_id', deliverer ? deliverer?.id : null)
+            .where('phone_id', delivererPhone ? delivererPhone?.id : null)
             .where('store_id', String(store))
             .whereNull('deletedAt').first()
 
-            if (deliverer && delivererPhone) {
-              deliverer.name = headinvoice?.deliverer_name
-              deliverer.phoneId = delivererPhone?.id
-              await deliverer.save()
+            if (!linksdeliver && delivererPhone && deliverer) {
+              Link.firstOrCreate({
+                delivererId: deliverer?.id,
+                phoneId: delivererPhone?.id,
+                storeId: store,
+                userId: userId
+              })
             }
           }
-
-          if (headinvoice.deliverer_name && !deliverer && delivererPhone) {
-            deliverer = await Deliverer.firstOrCreate({
-              name: headinvoice.deliverer_name,
-              phoneId: delivererPhone.id,
-              storeId: store,
-              userId: userId
-            })
-          }
-
-          const linksdeliver = await Link.query()
-          .where('deliverer_id', deliverer ? deliverer?.id : null)
-          .where('phone_id', delivererPhone ? delivererPhone?.id : null)
-          .where('store_id', String(store))
-          .whereNull('deletedAt').first()
-
-          if (!linksdeliver && delivererPhone && deliverer) {
-            Link.firstOrCreate({
-              delivererId: deliverer?.id,
-              phoneId: delivererPhone?.id,
-              storeId: store,
-              userId: userId
-            })
-          }
         }
+
+
       }
     }
 
@@ -440,7 +442,7 @@ export default class ListsController {
               .where('id', customerName ? customerName?.id : null)
               .where('store_id', String(store)).preload('phones').first()
               if (customerName) {
-                customerName.address = r.customer_row_adress
+                customerName.address = r.customer_row_adress ?? null
                 await customerName.save()
               }
             }
@@ -548,12 +550,18 @@ export default class ListsController {
               customerPhone = await Phone.query().where('number', r.customer_row_phone).first()
             }
 
-            if (r.customer_row_phone && !customerPhone) {
-              customerPhone = await Phone.firstOrCreate({
-                number: r.customer_row_phone,
-                storeId: store,
-                userId: userId
-              })
+            if (r.customer_row_phone) {
+              if (!customerPhone) {
+                try {
+                  customerPhone = await Phone.firstOrCreate({
+                    number: r.customer_row_phone,
+                    storeId: store,
+                    userId: userId
+                  })
+                } catch (e) {
+                  customerPhone = await Phone.query().where('number', r.customer_row_phone).first()
+                }
+              }
             }
 
             if (customerPhone) {
@@ -565,16 +573,16 @@ export default class ListsController {
 
                 if (customerName) {
                   customerName.name = r.customer_row_name
-                  customerName.address = r.customer_row_adress
+                  customerName.address = r.customer_row_adress ?? null
                   customerName.phoneId = customerPhone?.id
                   await customerName.save()
                 }
               }
 
-              if (r?.customer_row_name && !customerName && customerPhone && r?.customer_row_name !== '') {
+              if (r?.customer_row_name && !customerName) {
                 customerName = await Customer.firstOrCreate({
                   name: r?.customer_row_name,
-                  address: r?.customer_row_adress,
+                  address: r?.customer_row_adress ?? null,
                   phoneId: customerPhone ? customerPhone?.id : null,
                   storeId: store,
                   userId: userId
@@ -607,13 +615,20 @@ export default class ListsController {
               delivererPhoneRow = await Phone.query().where('number', r.deliverer_row_phone).first()
             }
 
-            if (r.deliverer_row_phone && !delivererPhoneRow) {
-              delivererPhoneRow = await Phone.firstOrCreate({
-                number: r.deliverer_row_phone,
-                storeId: store,
-                userId: userId
-              })
+            if (r.deliverer_row_phone) {
+              if (!delivererPhoneRow) {
+                try {
+                  delivererPhoneRow = await Phone.firstOrCreate({
+                    number: r.deliverer_row_phone,
+                    storeId: store,
+                    userId: userId
+                  })
+                } catch (e) {
+                  delivererPhoneRow = await Phone.query().where('number', r.deliverer_row_phone).first()
+                }
+              }
             }
+
             if (delivererPhoneRow) {
               if (r.deliverer_row_name) {
                 delivererNameRow = await Deliverer.query()
