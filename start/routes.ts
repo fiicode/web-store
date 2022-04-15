@@ -57,7 +57,7 @@ Route.get('/faker', async () => {
 })
 
 /**
- * INITIAL LOCAL FOR OFFLINE MODE
+ * INITIAL LOCAL FOR OFFLINE MODE API
  */
 Route.group(() => {
   Route.get('/initial/local/data/storage', async ({auth}) => {
